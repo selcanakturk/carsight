@@ -2,6 +2,7 @@ import pytest
 from fastapi.testclient import TestClient
 
 from app.main import app
+from app.services.prediction import PredictionServiceError, get_prediction_service
 
 
 client = TestClient(app)
@@ -55,3 +56,36 @@ def test_missing_required_input_is_rejected() -> None:
     response = client.post("/api/predict", json=payload)
 
     assert response.status_code == 422
+
+
+def test_future_model_year_is_rejected() -> None:
+    payload = {**VALID_PAYLOAD, "yıl": 9999}
+
+    response = client.post("/api/predict", json=payload)
+
+    assert response.status_code == 422
+
+
+def test_unexpected_input_is_rejected() -> None:
+    payload = {**VALID_PAYLOAD, "unknown_field": "unexpected"}
+
+    response = client.post("/api/predict", json=payload)
+
+    assert response.status_code == 422
+
+
+def test_prediction_service_failure_returns_safe_error() -> None:
+    class UnavailablePredictionService:
+        def predict(self, car: object) -> int:
+            raise PredictionServiceError("Internal model details")
+
+    app.dependency_overrides[get_prediction_service] = UnavailablePredictionService
+    try:
+        response = client.post("/api/predict", json=VALID_PAYLOAD)
+    finally:
+        app.dependency_overrides.clear()
+
+    assert response.status_code == 503
+    assert response.json() == {
+        "detail": "Prediction service is temporarily unavailable."
+    }
