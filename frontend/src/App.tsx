@@ -13,6 +13,12 @@ import {
 import { FormErrors, FormValues } from "./types";
 
 const currentYear = new Date().getFullYear();
+const conditionFields: (keyof FormValues)[] = [
+  "orjinal_parça_sayısı",
+  "lokal_boyalı_parça_sayısı",
+  "boyalı_parça_sayısı",
+  "değişen_parça_sayısı",
+];
 
 const initialValues: FormValues = {
   marka: "",
@@ -21,18 +27,26 @@ const initialValues: FormValues = {
   vitesTipi: "",
   yakitTuru: "",
   kasaTipi: "",
+  motorGucu_HP: "",
+  motorHacmi_Cc: "",
+  cekisTipi: "",
+  orjinal_parça_sayısı: "",
+  lokal_boyalı_parça_sayısı: "",
+  boyalı_parça_sayısı: "",
+  değişen_parça_sayısı: "",
 };
 
 const fieldsByStep: Record<number, (keyof FormValues)[]> = {
   1: ["marka", "yıl"],
-  2: ["kilometre_Km", "vitesTipi", "yakitTuru", "kasaTipi"],
-  3: [],
+  2: [
+    "kilometre_Km", "vitesTipi", "yakitTuru", "kasaTipi",
+    "motorGucu_HP", "motorHacmi_Cc", "cekisTipi",
+  ],
+  3: conditionFields,
+  4: [],
 };
 
-function validateFields(
-  form: FormValues,
-  fields: (keyof FormValues)[],
-): FormErrors {
+function validateFields(form: FormValues, fields: (keyof FormValues)[]): FormErrors {
   const errors: FormErrors = {};
 
   for (const field of fields) {
@@ -53,6 +67,25 @@ function validateFields(
     }
   }
 
+  if (conditionFields.some((field) => fields.includes(field))) {
+    for (const field of conditionFields) {
+      if (!form[field]) continue;
+      const value = Number(form[field]);
+      if (!Number.isInteger(value) || value < 0 || value > 13) {
+        errors[field] = "0 ile 13 arasında tam sayı girin.";
+      }
+    }
+
+    const allCountsValid = conditionFields.every((field) => {
+      const value = Number(form[field]);
+      return form[field] !== "" && Number.isInteger(value) && value >= 0 && value <= 13;
+    });
+    const total = conditionFields.reduce((sum, field) => sum + Number(form[field] || 0), 0);
+    if (allCountsValid && total > 13) {
+      errors.conditionTotal = `Parça sayılarının toplamı en fazla 13 olabilir. Mevcut toplam: ${total}.`;
+    }
+  }
+
   return errors;
 }
 
@@ -66,7 +99,7 @@ function App() {
 
   function updateField(field: keyof FormValues, value: string) {
     setForm((current) => ({ ...current, [field]: value }));
-    setErrors((current) => ({ ...current, [field]: undefined }));
+    setErrors((current) => ({ ...current, [field]: undefined, conditionTotal: undefined }));
     setResult(null);
     setRequestError("");
   }
@@ -78,7 +111,7 @@ function App() {
       return;
     }
     setErrors({});
-    setStep((current) => Math.min(3, current + 1));
+    setStep((current) => Math.min(4, current + 1));
   }
 
   function goToStep(nextStep: number) {
@@ -90,18 +123,18 @@ function App() {
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (step < 3) {
+    if (step < 4) {
       goToNextStep();
       return;
     }
 
     const nextErrors = validateFields(form, [
-      ...fieldsByStep[1],
-      ...fieldsByStep[2],
+      ...fieldsByStep[1], ...fieldsByStep[2], ...fieldsByStep[3],
     ]);
     if (Object.keys(nextErrors).length) {
       setErrors(nextErrors);
-      setStep(nextErrors.marka || nextErrors.yıl ? 1 : 2);
+      setStep(nextErrors.marka || nextErrors.yıl ? 1 :
+        fieldsByStep[2].some((field) => nextErrors[field]) ? 2 : 3);
       return;
     }
 
@@ -117,14 +150,19 @@ function App() {
         vitesTipi: form.vitesTipi,
         yakitTuru: form.yakitTuru,
         kasaTipi: form.kasaTipi,
+        motorGucu_HP: form.motorGucu_HP,
+        motorHacmi_Cc: form.motorHacmi_Cc,
+        cekisTipi: form.cekisTipi,
+        orjinal_parça_sayısı: Number(form.orjinal_parça_sayısı),
+        lokal_boyalı_parça_sayısı: Number(form.lokal_boyalı_parça_sayısı),
+        boyalı_parça_sayısı: Number(form.boyalı_parça_sayısı),
+        değişen_parça_sayısı: Number(form.değişen_parça_sayısı),
       });
       setResult(prediction);
     } catch (error) {
-      setRequestError(
-        error instanceof PredictionApiError
-          ? error.message
-          : "Beklenmeyen bir hata oluştu. Lütfen tekrar deneyin.",
-      );
+      setRequestError(error instanceof PredictionApiError
+        ? error.message
+        : "Beklenmeyen bir hata oluştu. Lütfen tekrar deneyin.");
     } finally {
       setIsLoading(false);
     }
@@ -141,45 +179,29 @@ function App() {
   return (
     <main className="page-shell">
       <Hero />
-
       <section className="valuation-shell" id="valuation" aria-labelledby="valuation-title">
         <div className="valuation-card">
           <div className="card-intro">
-            <div>
-              <p className="section-kicker">AKILLI DEĞERLEME</p>
-              <h2 id="valuation-title">Aracınızı tanımlayın</h2>
-            </div>
+            <div><p className="section-kicker">AKILLI DEĞERLEME V2</p><h2 id="valuation-title">Aracınızı tanımlayın</h2></div>
             <span className="secure-note"><i aria-hidden="true" /> Verileriniz kaydedilmez</span>
           </div>
-
           <PredictionStepper currentStep={step} onStepSelect={goToStep} />
-
           <form onSubmit={handleSubmit} noValidate>
-            {isLoading ? (
-              <AnalysisState />
-            ) : result ? (
+            {isLoading ? <AnalysisState /> : result ? (
               <PredictionResult form={form} result={result} onReset={resetFlow} />
             ) : (
-              <VehicleForm
-                step={step}
-                form={form}
-                errors={errors}
-                requestError={requestError}
-                currentYear={currentYear}
-                onChange={updateField}
-                onBack={() => setStep((current) => Math.max(1, current - 1))}
-              />
+              <VehicleForm step={step} form={form} errors={errors} requestError={requestError}
+                currentYear={currentYear} onChange={updateField}
+                onBack={() => setStep((current) => Math.max(1, current - 1))} />
             )}
           </form>
         </div>
-
         <div className="trust-row" aria-label="CarSight özellikleri">
-          <div><span>01</span><p><strong>Hızlı analiz</strong> Saniyeler içinde sonuç</p></div>
-          <div><span>02</span><p><strong>ML destekli</strong> Random Forest modeli</p></div>
-          <div><span>03</span><p><strong>Şeffaf</strong> Girdi özetinizle birlikte</p></div>
+          <div><span>01</span><p><strong>13 özellik</strong> Daha kapsamlı değerlendirme</p></div>
+          <div><span>02</span><p><strong>ML destekli</strong> V2 Pipeline modeli</p></div>
+          <div><span>03</span><p><strong>Şeffaf</strong> Tüm girdilerinizle birlikte</p></div>
         </div>
       </section>
-
       <footer className="product-footer">
         <div className="footer-brand"><span>CS</span><strong>CarSight AI</strong></div>
         <p>Powered by React <i>•</i> FastAPI <i>•</i> Scikit-Learn</p>

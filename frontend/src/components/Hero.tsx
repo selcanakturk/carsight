@@ -51,7 +51,7 @@ export function Hero() {
           </svg>
           <div className="scan-line" />
           <div className="data-chip chip-one"><span>ML MODEL</span><strong>Random Forest</strong></div>
-          <div className="data-chip chip-two"><span>ANALİZ</span><strong>6 araç özelliği</strong></div>
+          <div className="data-chip chip-two"><span>V2 ANALİZ</span><strong>13 araç özelliği</strong></div>
         </div>
       </div>
       <div className="road-lines" aria-hidden="true"><span /><span /><span /></div>

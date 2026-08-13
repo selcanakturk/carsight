@@ -5,6 +5,13 @@ export interface PredictionRequest {
   vitesTipi: string;
   yakitTuru: string;
   kasaTipi: string;
+  motorGucu_HP: string;
+  motorHacmi_Cc: string;
+  cekisTipi: string;
+  orjinal_parça_sayısı: number;
+  lokal_boyalı_parça_sayısı: number;
+  boyalı_parça_sayısı: number;
+  değişen_parça_sayısı: number;
 }
 
 export interface PredictionResponse {

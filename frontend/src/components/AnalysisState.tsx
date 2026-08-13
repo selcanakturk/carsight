@@ -1,9 +1,9 @@
 import type { CSSProperties } from "react";
 
 const stages = [
-  "Araç özellikleri işleniyor",
-  "Model verileri karşılaştırılıyor",
-  "Tahmini piyasa değeri hesaplanıyor",
+  "Araç özellikleri hazırlanıyor",
+  "Teknik ve kondisyon verileri işleniyor",
+  "ML modeli tahmini hesaplıyor",
 ];
 
 export function AnalysisState() {

@@ -1,4 +1,4 @@
-const steps = ["Araç", "Teknik", "Analiz"];
+const steps = ["Araç", "Teknik", "Kondisyon", "Analiz"];
 
 interface PredictionStepperProps {
   currentStep: number;
