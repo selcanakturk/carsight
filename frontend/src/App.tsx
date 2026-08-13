@@ -196,11 +196,6 @@ function App() {
             )}
           </form>
         </div>
-        <div className="trust-row" aria-label="CarSight özellikleri">
-          <div><span>01</span><p><strong>13 özellik</strong> Daha kapsamlı değerlendirme</p></div>
-          <div><span>02</span><p><strong>ML destekli</strong> V2 Pipeline modeli</p></div>
-          <div><span>03</span><p><strong>Şeffaf</strong> Tüm girdilerinizle birlikte</p></div>
-        </div>
       </section>
       <footer className="product-footer">
         <div className="footer-brand"><span>CS</span><strong>CarSight AI</strong></div>
