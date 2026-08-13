@@ -19,8 +19,42 @@ class CarPredictionRequest(BaseModel):
     vitesTipi: str = Field(min_length=1, description="Transmission type.")
     yakitTuru: str = Field(min_length=1, description="Fuel type.")
     kasaTipi: str = Field(min_length=1, description="Vehicle body type.")
+    motorGucu_HP: str = Field(min_length=1, description="Engine power value or band.")
+    motorHacmi_Cc: str = Field(
+        min_length=1,
+        description="Engine displacement value or band.",
+    )
+    cekisTipi: str = Field(min_length=1, description="Drivetrain type.")
+    orjinal_parça_sayısı: int = Field(
+        ge=0,
+        le=13,
+        description="Number of original body panels.",
+    )
+    lokal_boyalı_parça_sayısı: int = Field(
+        ge=0,
+        le=13,
+        description="Number of locally painted body panels.",
+    )
+    boyalı_parça_sayısı: int = Field(
+        ge=0,
+        le=13,
+        description="Number of painted body panels.",
+    )
+    değişen_parça_sayısı: int = Field(
+        ge=0,
+        le=13,
+        description="Number of replaced body panels.",
+    )
 
-    @field_validator("marka", "vitesTipi", "yakitTuru", "kasaTipi")
+    @field_validator(
+        "marka",
+        "vitesTipi",
+        "yakitTuru",
+        "kasaTipi",
+        "motorGucu_HP",
+        "motorHacmi_Cc",
+        "cekisTipi",
+    )
     @classmethod
     def validate_non_empty_string(cls, value: str) -> str:
         """Trim text input and reject values containing only whitespace."""
