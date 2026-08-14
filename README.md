@@ -6,21 +6,26 @@ The current v2 model evaluates 13 raw vehicle attributes and returns an estimate
 
 ## Live Links
 
-| Resource | URL |
-| --- | --- |
-| Live demo | _Production Vercel URL is not recorded in this repository yet._ |
-| API documentation | [carsight.onrender.com/docs](https://carsight.onrender.com/docs) |
-| Backend health | [carsight.onrender.com/health](https://carsight.onrender.com/health) |
+| Resource          | URL                                                                          |
+| ----------------- | ---------------------------------------------------------------------------- |
+| Live demo         | _Production Vercel URL is not recorded in this repository yet._              |
+| API documentation | [carsight.onrender.com/docs](https://carsight.onrender.com/docs)             |
+| Backend health    | [carsight.onrender.com/health](https://carsight.onrender.com/health)         |
 | GitHub repository | [github.com/selcanakturk/carsight](https://github.com/selcanakturk/carsight) |
 
 ## Screenshots
 
-Project screenshots have not yet been added to the repository.
+### Landing Page
 
-<!-- Add docs/images/hero.png: landing page and hero vehicle. -->
-<!-- Add docs/images/valuation-flow.png: four-step valuation form. -->
-<!-- Add docs/images/prediction-result.png: predicted price and vehicle summary. -->
-<!-- Add docs/images/ai-insights.png: deterministic AI insights section. -->
+<p align="center">
+  <img src="docs/images/hero.png" alt="CarSight AI Landing Page" width="100%">
+</p>
+
+### Vehicle Valuation Flow
+
+<p align="center">
+  <img src="docs/images/valuation-flow.png" alt="CarSight AI Valuation Flow" width="100%">
+</p>
 
 ## Features
 
@@ -44,11 +49,11 @@ V2 expands the original six-feature model to 13 raw inputs. Its fitted Pipeline 
 
 ### Model Performance
 
-| Model | MAE (TRY) | RMSE (TRY) | R² |
-| --- | ---: | ---: | ---: |
-| Linear Regression baseline | 358,176 | 737,938 | 0.236 |
-| Initial Random Forest | 157,289 | 556,297 | 0.566 |
-| Tuned Random Forest v1 | 154,633 | 543,453 | 0.586 |
+| Model                      |   MAE (TRY) |  RMSE (TRY) |        R² |
+| -------------------------- | ----------: | ----------: | --------: |
+| Linear Regression baseline |     358,176 |     737,938 |     0.236 |
+| Initial Random Forest      |     157,289 |     556,297 |     0.566 |
+| Tuned Random Forest v1     |     154,633 |     543,453 |     0.586 |
 | **Production v2 Pipeline** | **104,919** | **317,510** | **0.859** |
 
 Lower MAE and RMSE indicate smaller prediction errors; higher R² indicates that the model explains more variance in the held-out test set. Compared with tuned v1, v2 reduced MAE by approximately 32% and RMSE by approximately 42%, while increasing R² by about 0.273.
@@ -99,13 +104,13 @@ The backend accepts validated API-friendly field names, maps them to the Pipelin
 
 ## Tech Stack
 
-| Area | Technologies |
-| --- | --- |
-| Frontend | React, TypeScript, Vite, CSS |
-| Backend | FastAPI, Pydantic, Pandas, Uvicorn |
+| Area             | Technologies                                        |
+| ---------------- | --------------------------------------------------- |
+| Frontend         | React, TypeScript, Vite, CSS                        |
+| Backend          | FastAPI, Pydantic, Pandas, Uvicorn                  |
 | Machine learning | Scikit-learn, Random Forest, NumPy, Joblib, Jupyter |
-| Testing | Pytest, FastAPI TestClient |
-| Deployment | Render, Vercel |
+| Testing          | Pytest, FastAPI TestClient                          |
+| Deployment       | Render, Vercel                                      |
 
 ## Project Structure
 
